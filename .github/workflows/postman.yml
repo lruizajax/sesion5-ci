@@ -1,0 +1,38 @@
+name: Run Postman Collection
+
+on:
+  push:
+    branches:
+      - postman
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      
+      - name: Install Newman
+        run: npm install -g newman
+      
+      - name: Install Newman Report
+        run: npm install -g newman-reporter-htmlextra
+
+      - name: Run Postman Collection
+        run: |
+          newman run postman/placeholder.json \
+          -r cli,htmlextra \
+          --reporter-htmlextra-export report.html
+      
+      - name: Upload Report
+        uses: actions/upload-artifact@v7
+        with:
+          name: postman-report
+          path: report.html
+          
