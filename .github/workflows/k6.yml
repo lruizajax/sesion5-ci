@@ -1,0 +1,38 @@
+name: Run K6 HTML Report
+
+on:
+  push:
+    branches:
+      - k6
+
+jobs:
+  k6-test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo apt update
+          sudo apt install -y gnupg ca-certificates
+          curl -fsSL https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/k6-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt update
+          sudo apt install k6
+
+      - name: Create reports folder
+        run: mkdir -p reports
+
+      - name: Run K6 Test
+        run: |
+          k6 run tests/load.js
+
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-html-report
+          path: reports/report.html
