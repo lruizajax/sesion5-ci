@@ -1,0 +1,35 @@
+name: Run JMeter Tests
+
+on:
+  push:
+    branches:
+      - jmeter
+
+jobs:
+  jmeter-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install JMeter
+        run: |
+          wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz
+          tar -xzf apache-jmeter-5.6.3.tgz
+          ls
+          
+      - name: Run JMeter Test
+        run: |
+          mkdir -p reports
+          
+          ./apache-jmeter-5.6.3/bin/jmeter -n \
+          -t jmeter/status_v3.jmx \
+          -l reports/results.jtl \
+          -e -o reports/dashboard
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmeter-report
+          path: reports/dashboard
