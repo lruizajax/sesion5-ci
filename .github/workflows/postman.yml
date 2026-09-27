@@ -27,11 +27,11 @@ jobs:
       - name: Run Postman Collection
         run: |
           newman run postman/placeholder.json \
-          -r cli, htmlextra \
+          -r cli,htmlextra \
           --reporter-htmlextra-export report.html
       
       - name: Upload Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: postman-report
           path: report.html
